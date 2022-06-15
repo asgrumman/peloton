@@ -20,7 +20,7 @@ st.set_page_config(layout="wide")
 user = st.secrets["username"]
 pw = st.secrets["password"]
 
-@st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True,ttl=300)
 def load_data():
     #Authenticate the user
     s = requests.Session()
