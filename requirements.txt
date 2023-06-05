@@ -1,7 +1,7 @@
 json5==0.9.1
 jsonschema==3.2.0
 numpy==1.23.1
-pandas==1.0.1
+pandas==1.3.4
 plotly==4.14.3
 py==1.8.1
 python-dateutil==2.8.1
