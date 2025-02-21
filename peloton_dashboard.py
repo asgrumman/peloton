@@ -12,7 +12,7 @@ import time
 from io import StringIO
 import streamlit as st
 import plotly.graph_objects as go
-pd.set_option('display.max_rows',None)
+pd.set_option('max_rows',None)
 pd.set_option('display.max_columns', None)
 st.set_page_config(layout="wide")
 
