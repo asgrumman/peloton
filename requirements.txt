@@ -1,12 +1,4 @@
-json5==0.9.1
-jsonschema==3.2.0
-numpy==1.23.1
 pandas==1.0.1
-plotly==4.14.3
-py==1.8.1
-python-dateutil==2.8.1
-python-jsonrpc-server==0.3.4
-python-language-server==0.31.7
-requests==2.22.0
-streamlit==1.9.0
-toml==0.10.2
+plotly==5.18.0
+Requests==2.32.3
+streamlit==1.23.1
