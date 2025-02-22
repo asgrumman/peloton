@@ -20,7 +20,7 @@ st.set_page_config(layout="wide")
 user = st.secrets["username"]
 pw = st.secrets["password"]
 
-@st.cache(allow_output_mutation=True,ttl=300)
+@st.cache_data(ttl=300)
 def load_data():
     #Authenticate the user
     s = requests.Session()
@@ -33,12 +33,10 @@ def load_data():
     apidata = s.get(me_url).json()
 
     #Get my user id
-    df_my_id = json_normalize(apidata, 'id', ['id'])
-    df_my_id_clean = df_my_id.iloc[0]
-    my_id = (df_my_id_clean.drop([0])).values.tolist()
+    my_id = apidata['id']
 
     #Get data from csv
-    url = 'https://api.onepeloton.com/api/user/{}/workout_history_csv?timezone=America/Chicago'.format(*my_id)
+    url = 'https://api.onepeloton.com/api/user/{}/workout_history_csv?timezone=America/Chicago'.format(my_id)
     response = s.get(url)
     df = pd.read_csv(StringIO(response.text))
 
@@ -53,10 +51,10 @@ df_rides = df_rides.dropna(subset=['Total Output']) #dropping rides with null ou
 # Clean up some of the columns
 df_rides['Avg. Resistance'] = df_rides["Avg. Resistance"].str.replace("%","")
 df_rides['Avg. Resistance'] = df_rides["Avg. Resistance"].astype(float)
-df_rides['Workout Timestamp']= df['Workout Timestamp'].str.replace(r"\(.*\)","")
-df_rides['Class Timestamp']= df['Class Timestamp'].str.replace(r"\(.*\)","")
-df_rides['Workout Timestamp'] = df_rides['Workout Timestamp'].astype('datetime64')
-df_rides['Class Timestamp'] = df_rides['Class Timestamp'].astype('datetime64')
+df_rides['Workout Timestamp']= df['Workout Timestamp'].str.replace(r"\(.*\)","",regex=True)
+df_rides['Class Timestamp']= df['Class Timestamp'].str.replace(r"\(.*\)","",regex=True)
+df_rides['Workout Timestamp'] = df_rides['Workout Timestamp'].astype('datetime64[ns]')
+df_rides['Class Timestamp'] = df_rides['Class Timestamp'].astype('datetime64[ns]')
 #not going to convert EDT timestamps to central, only looking at timestamps by the day and I don't do super early or late workouts
 df_rides = df_rides.sort_values(by='Length (minutes)')
 df_rides['Length (minutes)'] = df_rides['Length (minutes)'].astype(str)
