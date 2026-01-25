@@ -16,30 +16,21 @@ pd.set_option('display.max_rows',None)
 pd.set_option('display.max_columns', None)
 st.set_page_config(layout="wide")
 
-#Username + Password inputs
-user = st.secrets["username"]
-pw = st.secrets["password"]
-
 @st.cache_data(ttl=300)
 def load_data():
-    #Authenticate the user
+    COOKIES = {"peloton_session_id": st.secrets["PELOTON_SESSION_ID"]}
+    USER_ID = st.secrets["PELOTON_USER_ID"]
+
+    HEADERS = {"User-Agent": "Mozilla/5.0"}
+
     s = requests.Session()
-    payload = {'username_or_email': user, 'password':pw}
-    s.post('https://api.onepeloton.com/auth/login', json=payload)
+    s.cookies.update(COOKIES)
 
-    #Get User ID to pass into other calls
-    me_url = 'https://api.onepeloton.com/api/me'
-    response = s.get(me_url)
-    apidata = s.get(me_url).json()
+    url = f"https://api.onepeloton.com/api/user/{USER_ID}/workout_history_csv"
+    response = s.get(url, headers=HEADERS, params={"timezone": "America/Chicago"})
+    response.raise_for_status()
 
-    #Get my user id
-    my_id = apidata['id']
-
-    #Get data from csv
-    url = 'https://api.onepeloton.com/api/user/{}/workout_history_csv?timezone=America/Chicago'.format(my_id)
-    response = s.get(url)
     df = pd.read_csv(StringIO(response.text))
-
     return df
 
 df = load_data()
